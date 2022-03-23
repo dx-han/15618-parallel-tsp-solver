@@ -11,7 +11,7 @@
 ### Background
 The Traveling Salesman Problem (TSP) is a famous NP-hard problem. It asks for the shortest route to visit all the cities in the list exactly once. The TSP problem has applications in various fields for planning optimization. Since the TSP problem is NP-hard, finding exact solutions to this problem is very time consuming. Therefore, we expect that parallelism can be exploited to accelerate the process of solving the TSP problem.We would like to see how TSP algorithms can benefit from parallelism of GPU and multi-core CPU.
 
-An exact solution to the TSP problem is the Held–Karp algorithm, which is a dynamic programming solution of time complexity O(n22n) where n is the problem size. This problem requires exploring a wide range of permutations and thus we expect to see high speedups for this algorithm.
+An exact solution to the TSP problem is the Held–Karp algorithm, which is a dynamic programming solution of time complexity O(n^2^2^n^) where n is the problem size. This problem requires exploring a wide range of permutations and thus we expect to see high speedups for this algorithm.
 
 For a large problem size, the exact solution would take unreasonably long time to run (even with parallelism), therefore many heuristic algorithms were invented to approximate the exact solution, and they are much faster than the exact solution. We also plan to investigate how parallelism can accelerate these heuristic algorithms. 
 
