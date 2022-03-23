@@ -1,4 +1,4 @@
-# CMU 15-618 Final Project: Paralle TSP Solver
+# CMU 15-618 Final Project: Parallel TSP Solver
 ##### Team members: Yujun Qin and Dongxiao Han
 
 ## Project Proposal
