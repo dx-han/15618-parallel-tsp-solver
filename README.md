@@ -1,6 +1,4 @@
-# 15618-parallel-tsp-solver
-
-## Welcome to GitHub Pages
+## 15618-parallel-tsp-solver
 
 You can use the [editor on GitHub](https://github.com/dx-han/15618-parallel-tsp-solver/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
