@@ -174,15 +174,14 @@ int main(int argc, const char *argv[]) {
     {
         // use different size of candidate path set start from 2 cities to n-1 cities
         for (int num_of_city_in_subset = 2; num_of_city_in_subset <= num_of_city - 1; num_of_city_in_subset++) {
-            std::vector<std::vector<int>> subsets = combinations[num_of_city_in_subset];
-            size_t num_of_subset = subsets.size();
+            size_t num_of_subset = combinations[num_of_city_in_subset].size();
             // printf("numofsubset: %d\n", (int)num_of_subset);
             // step 1: calculate best path for each city in each subset
             #pragma omp barrier
             #pragma omp for schedule(static)
                 for (size_t i = 0; i < num_of_subset; i++) {
                     // std::vector<int> subset = subsets[i]; // length 4 [3,4,6,7]
-                    update_graph(subsets[i], distances, graph);
+                    update_graph(combinations[num_of_city_in_subset][i], distances, graph);
                 }
     //         for (size_t i = 0; i < num_of_subset; i++) {
     //             std::vector<size_t> subset = subsets[i];
