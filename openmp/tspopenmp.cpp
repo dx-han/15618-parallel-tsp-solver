@@ -100,7 +100,7 @@ int main(int argc, const char *argv[]) {
      */
     std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> graph;
     std::unordered_map<int, std::vector<std::vector<int>>> combinations;
-    std::unordered_map<size_t, std::unordered_map<size_t, std::vector<path_t>>> path_group;
+    // std::unordered_map<size_t, std::unordered_map<size_t, std::vector<path_t>>> path_group;
     std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<size_t, candidate_t>>>> dist_candidate_group;
     std::vector<candidate_t> last_candidates(num_of_city - 1);
 
