@@ -35,7 +35,7 @@ We expect to run OpenMP and MPI programs on PSC Regular Memory Nodes, and CUDA p
 
 ### Goals & Deliverables
 #### Plan to achieve (100% Goal)
-1.  Implement exact and heuristic algorithms with different optimized strategies.
+1. Implement exact and heuristic algorithms with different optimized strategies.
 1. Implement these algorithms using CUDA, OpenMP, and MPI.
 1. The speedup is decent for OpenMP and MPI.
 1. The CUDA versions achieve reasonable speedup compared to CPU solutions.
@@ -65,3 +65,15 @@ We make these choice based on our familarity with them through the process of th
 - Week 5 (04/18-04/24): Implement CUDA and MPI version of the heuristic solution.
 - Week 6 (04/25-05/01): Final improvements. Gather data and write the final report. (04/29 - report)
 - Week 7 (05/02-05/05): Prepare the poster and presentation. (0505 - presentation)
+
+### Milestone
+
+Until Apr 9, we have completed one exact algorithm (Held-Karp) implemented via CUDA and OpenMP with performance results running in GHC and PSC.
+
+Currently, we are working with MPI version of the exact algorithm and doing some researches about heristic algorithms. After exam 2, especially at the end of next week (Apr 17), we will finish the part of exploration in exact algorithm and start working with heuristic algorithms.
+
+We plan to show some graphs that analyze performance between different libraries and algorithms at the poster session. 
+
+Some test results for simple display: 
+- The CUDA version of the exact algorithm spends 1.8s on 27 cities. 
+- The OpenMP version of the exact algorithm spends 2.2s on 20 cities 32 cores with 28x speedup. [More restuls](https://github.com/dx-han/15618-parallel-tsp-solver/blob/dongxiah/openmp/exact_result_psc.txt)
