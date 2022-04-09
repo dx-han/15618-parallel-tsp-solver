@@ -2,7 +2,7 @@
 PREFIX="../inputs/"
 FILES=("input_20_10x10.txt")
 PROGRAM="./tspopenmp"
-THREADS=(1 2 4 8)
+THREADS=(1 8 16 32 64 128)
 for FILE in ${FILES[@]}
 do
     for THREAD in ${THREADS[@]}
