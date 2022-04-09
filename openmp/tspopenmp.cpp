@@ -303,11 +303,11 @@ candidate_t find_best_path(const std::vector<candidate_t> &candidates) {
 
 void write_output(const std::vector<candidate_t> &path, const std::string &filename, const int dist) {
     std::ofstream f(filename);
-    f << path.size() + 1 << std::endl;
-    f << dist << std::endl;
-    f << 1 << " -> ";
+    // f << path.size() + 1 << std::endl;
+    f << 0 << " ";
     for (size_t i = 0; i < path.size(); i++) {
-        f << path[i].from_city  << " -> ";
+        f << path[i].from_city - 1 << " ";
     }
-    f << 1 << std::endl;
+    f << std::endl;
+    f << dist << std::endl;
 }
