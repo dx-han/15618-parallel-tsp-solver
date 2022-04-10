@@ -9,7 +9,7 @@
 
 */
 
-#include "tspopenmp.h"
+#include "exactopenmp.h"
 #include <assert.h>
 #include <chrono>
 #include <cstdio>

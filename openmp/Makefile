@@ -1,6 +1,6 @@
-APP_NAME=tspopenmp
+APP_NAME=exactopenmp
 
-OBJS=tspopenmp.o
+OBJS=exactopenmp.o
 
 CXX = g++ -m64 -std=c++11
 CXXFLAGS = -I. -O3 -Wall -fopenmp -Wno-unknown-pragmas
