@@ -1,7 +1,7 @@
 #!/bin/bash
 PREFIX="../inputs/"
 FILES=("input_20_100x100.txt")
-PROGRAM="./tspopenmp"
+PROGRAM="./exactopenmp"
 THREADS=(8)
 for FILE in ${FILES[@]}
 do
