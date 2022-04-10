@@ -277,6 +277,7 @@ void update_graph(const std::vector<int> &subset, std::unordered_map<int, std::u
             if (total_dist < dist) {
                 best_candidate.from_city = from_city;
                 best_candidate.dist = total_dist;
+                dist = total_dist;
             }
         }
         // printf("%d  %d  %s  %d  %d\n", to_city, (int)num_of_city, all_set.c_str(), best_candidate.from_city, best_candidate.dist);
