@@ -79,6 +79,5 @@ Currently, we are working with MPI version of the exact algorithm and doing some
 We plan to show some graphs that analyze performance between different libraries and algorithms at the poster session. 
 
 Some preliminary test results: 
-- The CUDA version of the Held-Karp algorithm can compute the shortest path of 27 cities in 1.8 seconds on the RTX 2080 on the GHC machines. At this problem size, it takes 6.6GB of GPU memory and the problem space complexity is O(2<sup>n</sup>n). This is a considerable speedup compared even to the 64 core CPU version.
-- ![alt text](https://github.com/dx-han/15618-parallel-tsp-solver/blob/main/imgs/TSP_output_27.png?raw=true)
+- The CUDA version of the Held-Karp algorithm can compute the shortest path of 27 cities in 1.8 seconds on the RTX 2080 on the GHC machines. At this problem size, it takes 6.6GB of GPU memory and the problem space complexity is O(2<sup>n</sup>n). This is a considerable speedup compared even to the 64 core CPU version ![alt text](https://github.com/dx-han/15618-parallel-tsp-solver/blob/main/imgs/TSP_output_27.png?raw=true)
 - The OpenMP version of the exact algorithm spends 2.2s on 20 cities 32 cores with 28x speedup. [More results](https://github.com/dx-han/15618-parallel-tsp-solver/blob/dongxiah/openmp/exact_result_psc.txt)
