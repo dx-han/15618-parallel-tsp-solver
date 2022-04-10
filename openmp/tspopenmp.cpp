@@ -21,6 +21,7 @@
 #include <random>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <iostream>
@@ -57,11 +58,9 @@ int main(int argc, const char *argv[]) {
     const char *input_filename = get_option_string("-f", NULL);
     int num_of_threads = get_option_int("-n", 1);
     
-    int error = 0;
 
     if (input_filename == NULL) {
         printf("Error: You need to specify -f.\n");
-        error = 1;
         return 1;
     }
 
@@ -92,246 +91,223 @@ int main(int argc, const char *argv[]) {
     printf("Number of cities: %d\n", num_of_city);
     printf("Map size: %d x %d\n", dim_x, dim_y);
 
+
+    /* ============= initialization =============*/
+
+    // record distance between each city, outer map city id is smaller than inner map city id
+    std::unordered_map<int, std::unordered_map<int, int>> distances;
+    update_distances(distances, cities);
+
+    /* run combinations for initialization in parallel */
+    std::unordered_map<int, std::vector<std::vector<int>>> combinations;
+    #pragma omp parallel for schedule(static)
+        for (int i = 0; i < num_of_city - 1; i++) {
+            int num_of_city_in_subset = i + 1;
+            combinations[num_of_city_in_subset] = get_combination(num_of_city - 1, num_of_city_in_subset);
+        }
+    
     /**
      * graph: city_id: num_of_set: set (stored as string, cities are separated by ","), candidate_t
      * E.g. graph[5][3]['2,3,4,']={city:2,distance=40}: to go to city 5, only only go through city 2,3,4 from city1, the best path
      * to 1->{3,4}->2->5, and the distance from city1 to city 5 is 40
      */
-    std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> graph(num_of_city);
-    // record distance between each city, outer map city id is smaller than inner map city id
-    std::unordered_map<size_t, std::unordered_map<size_t, size_t>> distances(num_of_city);
-    update_distances(distances, cities);
-    std::vector<city_t> first_city_parallel;
-    for (size_t i = 0; i < num_of_city - 1; i++) {
-        first_city_parallel.emplace_back(cities[0]);
+    std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> graph;
+    for (int i = 0; i < num_of_city - 1; i++) {
+        candidate_t best_candidate;
+        city_t first_city = cities[0];
+        int to_city = i + 2;
+        best_candidate.from_city = to_city;
+        best_candidate.dist = get_euclidian_distance(first_city, cities[i + 1]);
+        std::string path = "," + std::to_string(to_city) + ",";
+        graph[to_city][1][path] = best_candidate;
     }
-    
+    initiate_graph(combinations, distances, graph);
+
+    std::vector<candidate_t> last_candidates(num_of_city - 1);
+    std::string other_city_except_city1 = "";
+    for (int i = 2; i <= num_of_city; i++) {
+        other_city_except_city1 += "," + std::to_string(i) + ",";
+    }
+
+    init_time += duration_cast<dsec>(Clock::now() - init_start).count();
+    printf("Initialization Time: %lf.\n", init_time);
+
+
+    /* ============= run Held-Karp in parallel =============*/
+
     auto compute_start = Clock::now();
     double compute_time = 0;
-
-    #pragma omp parallel
-    {
-        #pragma omp for schedule(static)
-            for (size_t i = 0; i < num_of_city - 1; i++) {
-                candidate_t best_path;
-                city_t first_city = first_city_parallel[i];
-                std::string set = std::to_string(i+2) + ",";
-                best_path.city = i + 2;
-                best_path.distance = get_euclidian_distance(first_city, cities[i+1]);
-                graph[i+2][1][set] = best_path;
-            }
-    }
-
-    printf("%d %d\n", graph[2][1]["2,"].city, graph[2][1]["2,"].distance);
-    printf("%d %d\n", graph[3][1]["3,"].city, graph[3][1]["3,"].distance);
-    printf("%d %d\n", graph[4][1]["4,"].city, graph[4][1]["4,"].distance);
-
-    std::vector<candidate_t> last_candidates(num_of_city-1);
-
-
-    /* ===========debug done here, will continue========== */
-    
-    
     #pragma omp parallel
     {
         // use different size of candidate path set start from 2 cities to n-1 cities
-        for (size_t s = 2; s <= num_of_city - 1; s++) {
-            // for each subset, the number of city = s
-            std::vector<std::vector<size_t>> subsets = get_combination(num_of_city, s);
-            size_t num_of_subset = subset.size();
-            for (size_t i = 0; i < num_of_subset; i++) {
-                std::vector<size_t> subset = subsets[i];
-                // num_of_city_in_subset is s, will delete var later
-                size_t num_of_city_in_subset = subset.size();
-                size_t num_of_combination_parallel = num_of_city_in_subset * (num_of_city_in_subset - 1);
-                // suppose subset={2,3,4}, subset_parallel={2,3,4,2,3,4}
-                std::vector<size_t> subset_parallel = padding_subset(subset);
-                #pragma omp barrier
-                std::vector<path_t> path(num_of_combination_parallel);
-                // step1: generate candidate path from one city i to city j across city {2,...,i-1,i+1,...,j-1,j+1,...n}, where n = s
-                #pragma omp for schedule(static)
-                    for (size_t j = 0; j < num_of_city_in_subset; j++) {
-                        update_path(path, subset_parallel, j, num_of_city_in_subset);
-                    }
-                std::unsorted_map<size_t, std::vector<candidate_t>> dist_candidate(num_of_city_in_subset, std::vector<candidate_t>(num_of_city_in_subset-1));
-                // step2: calculate total distance for each candidate path
-                #pragma omp for schedule(static)
-                    for (size_t j = 0; j < num_of_combination_parallel; j++) {
-                        size_t from_city = path[j].from;
-                        size_t to_city = path[j].to;
-                        std::string set = path[j].set;
-                        size_t curr_dist = from_city < to_city ? distances[from_city][to_city] : distances[to_city][from_city];
-                        size_t prev_dist = graph[from_city][s-2][set].distance;
-                        candidate_t candidate;
-                        candidate.city = from_city;
-                        candidate.distance = curr_dist + prev_dist;
-                        dist_candidate[to_city][from_city] = candidate;
-                    }
-                // step3: find the minimum distance from different city to city i across city {2,...,i-1,i+1,...,j-1,j+1,...n}, where n = s
-                #pragma omp for schedule(static)
-                    for (size_t j = 0; j < num_of_city_in_subset; j++) {
-                        size_t to_city = subset_parallel[j * num_of_city_in_subset + j];
-                        std::string other_cities = get_other_cities(subset_parallel, j, num_of_city_in_subset);
-                        candidate_t best_path = find_best_path(dist_candidate[to_city]);
-                        graph[to_city][s-1][other_cities] = best_path;
-                    }
-            }
+        for (int num_of_city_in_subset = 2; num_of_city_in_subset <= num_of_city - 1; num_of_city_in_subset++) {
+            size_t num_of_subset = combinations[num_of_city_in_subset].size();
+            // step 1: calculate best path for each city in each subset
+            #pragma omp barrier
+            #pragma omp for schedule(static)
+                for (size_t i = 0; i < num_of_subset; i++) {
+                    // std::vector<int> subset = subsets[i]; // length 4 [3,4,6,7]
+                    update_graph(combinations[num_of_city_in_subset][i], distances, graph);
+                }
         }
-
-        // step4: update for the last path from city i to city 1
-        size_t rest_city = num_of_city - 1;
+        // step 2: update for the last path from city i to city 1
         #pragma omp for schedule(static)
-            for (size_t i = 0; i < num_of_city - 1;; i++) {
-                size_t from_city = i + 2; // 2/.../n
-                size_t to_city = 1;
-                std::string other_cities = get_last_other_cities(curr_city, num_of_city);
-                size_t curr_dist = distances[to_city][from_city];
-                size_t prev_dist = grap[from_city][num_of_city-2][other_cities].distance;
+            for (int i = 0; i < num_of_city - 1; i++) {
+                int from_city = i + 2; // 2...n
+                int to_city = 1;
+                int prev_dist = graph[from_city][num_of_city-1][other_city_except_city1].dist;
+                int curr_dist = distances[to_city][from_city];
                 candidate_t candidate;
-                candidate.city = from_city;
-                candidate.distance = curr_dist + prev_dist;
+                candidate.from_city = from_city;
+                candidate.dist = curr_dist + prev_dist;
                 last_candidates[i] = candidate;
             }
     }
 
     compute_time += duration_cast<dsec>(Clock::now() - compute_start).count();
     printf("Computation Time: %lf.\n", compute_time);
-
-    //go through graph can get the best path
+    
+    // go through the last layer of graph can get the best path
     candidate_t last_best_path = find_best_path(last_candidates);
+
     std::vector<candidate_t> best_path;
     best_path.emplace_back(last_best_path);
-    size_t total_distance = last_best_path.distance;
-    for (size_t s = num_of_city - 1; s > 0; s--) {
-        size_t to_city = best_path.back().city;
-        size_t city = 0;
-        size_t distance = std::numeric_limits<int>::max();
-        for (auto iter = graph[to_city][s]; iter != graph[to_city][s].end(); iter++) {
-            candidate_t curr = iter.second;
-            if (curr.distance < distance) {
-                distance = curr.distance;
-                city = curr.city;
-            }
+    std::string path_gone = "";
+    for (int num_of_city_in_subset = num_of_city - 1; num_of_city_in_subset > 1; num_of_city_in_subset--) {
+        int to_city = best_path.back().from_city;
+        std::string next_path = "";
+        for (int i = 2; i <= num_of_city; i++) {
+            std::size_t found = path_gone.find("," + std::to_string(i) + ",");
+            if (found != std::string::npos) continue;
+            next_path += "," + std::to_string(i) + ",";
         }
-        candidate_t candidate;
-        candidate.city = city;
-        candidate.distance = distance;
+        path_gone += "," + std::to_string(to_city) + ",";
+        candidate_t candidate = graph[to_city][num_of_city_in_subset][next_path];
         best_path.emplace_back(candidate);
     }
 
-    //write to output
-    //best_path
-    //total_distance
-    // const char *output_filename = std::
-    // FILE *output = fopen()
+     int total_dist = last_best_path.dist;
 
-    // int res = get_euclidian_distance(cities[0], cities[1]);
-    printf("here %d\n", g[1][1]["1"]);
-    printf("here %d\n", g[2][1]["2"]);
-    printf("here %d\n", g.size());
+    // write to output
+    std::stringstream output;
+    output << "output_" << std::to_string(num_of_city) << "_" << std::to_string(dim_x) << "x" << std::to_string(dim_y) << ".txt";
+    std::string output_filename = output.str();
+    write_output(best_path, output_filename, total_dist);
 }
 
-size_t get_euclidian_distance(const city_t &city1, const city_t &city2) {
-    size_t x1 = city1.x;
-    size_t y1 = city1.y;
-    size_t x2 = city2.x;
-    size_t y2 = city2.y;
+int get_euclidian_distance(const city_t &city1, const city_t &city2) {
+    int x1 = city1.x;
+    int y1 = city1.y;
+    int x2 = city2.x;
+    int y2 = city2.y;
     return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
 
-void update_distances(std::unordered_map<size_t, std::unordered_map<size_t, size_t>> &distances, const std::vector<city_t> &cities) {
+void update_distances(std::unordered_map<int, std::unordered_map<int, int>> &distances, const std::vector<city_t> &cities) {
     // !let outer key is smaller than inner key
     for (size_t i = 0; i < cities.size(); i++) {
         for (size_t j = i + 1; j < cities.size(); j++) {
-            distances[i][j] = get_euclidian_distance(cities[i], cities[j]);
+            distances[i+1][j+1] = get_euclidian_distance(cities[i], cities[j]);
         }
     }
 }
 
-std::vector<std::vector<size_t>> get_combination(size_t n, size_t k) {
-    std::vector<std::vector<size_t>> res;
-    std::vector<size_t> curr;
+std::vector<std::vector<int>> get_combination(int n, int k) {
+    std::vector<std::vector<int>> res;
+    std::vector<int> curr;
+    // start from city 2
     helper(2, k, n, curr, res);
     return res;
 }
 
-void helper(size_t idx, size_t k, size_t n, std::vector<size_t> &curr, std::vector<std::vector<size_t>> &res) {
-    if (curr.size() == k) {
+void helper(int idx, int k, int n, std::vector<int> &curr, std::vector<std::vector<int>> &res) {
+    if ((int)curr.size() == k) {
         res.emplace_back(curr);
         return;
     }
-    for (size_t i = idx; i < n + 1; i++) {
+    // start from 2, so end with n + 2 instead of n + 1
+    for (int i = idx; i < n + 2; i++) {
         curr.emplace_back(i);
-        helper(idx + 1, k, n, curr, res);
+        helper(i + 1, k, n, curr, res);
         curr.pop_back();
     }
 }
 
-std::vector<size_t> padding_subset(const std::vector<size_t> &subset) {
-    std::vector<size_t> res;
-    for (size_t i = 0; i < subset.size(); i++) {
-        for (size_t j = 0; j < subset.size(); j++) {
-            res.emplace_back(subset[j]);
-        }
-    }
-    return res;
-}
-
-void update_path(std::vector<path_t> &path, const std::vector<size_t> &subset_parallel, size_t to_idx, size_t num_of_city_in_subset) {
-    size_t to_city = subset_parallel[to_idx * num_of_city_in_subset + to_idx];
-    size_t j = 0;
-    for (size_t i = 0; i < num_of_city_in_subset; i++) {
-        size_t from_city = subset_parallel[to_idx * num_of_city_in_subset + i];
-        if (to_city != from_city) {
-            path_t curr_path;
-            curr_path.from = from_city;
-            curr_path.to = to_city;
-            std::string set;
-            for (size_t j = 0; j < num_of_city_in_subset; j++) {
-                size_t city = subset_parallel[to_idx * num_of_city_in_subset + i];
-                set += std::to_string(city) + ",";
+void initiate_graph(std::unordered_map<int, std::vector<std::vector<int>>> &combinations, std::unordered_map<int, std::unordered_map<int, int>> &distances, std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> &graph) {
+    for (size_t num_of_city_in_subset = 2; num_of_city_in_subset <= combinations.size(); num_of_city_in_subset++) {
+        std::vector<std::vector<int>> subsets = combinations[num_of_city_in_subset];
+        for (size_t i = 0; i < subsets.size(); i++) {
+            std::vector<int> subset = subsets[i];
+            std::string path = "";
+            for (size_t j = 0; j < subset.size(); j++) {
+                path += "," + std::to_string(subset[j]) + ",";
             }
-            curr_path.set = set;
-            path[to_idx * num_of_city_in_subset + j] = curr_path;
+            candidate_t new_candidate;
+            for (size_t j = 0; j < subset.size(); j++) {
+                int city = subset[j];
+                graph[city][num_of_city_in_subset][path] = new_candidate;
+            }
         }
     }
 }
 
-std::string get_other_cities(const std::vector<size_t> &subset_parallel, size_t to_idx, size_t num_of_city_in_subset) {
-    // convert number to string
-    std::string res;
-    size_t to_city = subset_parallel[to_idx * num_of_city_in_subset + to_idx];
-    for (size_t i = 0; i < num_of_city_in_subset; i++) {
-        size_t from_city = subset_parallel[to_idx * num_of_city_in_subset + i];
-        if (to_city != from_city) {
-            res += std::to_string(from_city) + ",";
+void update_graph(const std::vector<int> &subset, std::unordered_map<int, std::unordered_map<int, int>> &distances, std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> &graph) {
+    size_t num_of_city = subset.size();
+    for (size_t i = 0; i < subset.size(); i++) {
+        int to_city = subset[i];
+        int dist = std::numeric_limits<int>::max();
+        std::string all_set = "";
+        for (size_t j = 0; j < subset.size(); j++) {
+            all_set += "," + std::to_string(subset[j]) + ",";
         }
+        candidate_t best_candidate;
+        for (size_t j = 0; j < subset.size(); j++) {
+            int from_city = subset[j];
+            if (to_city == from_city) continue;
+            std::string set = "";
+            for (size_t k = 0; k < subset.size(); k++) {
+                int city = subset[k];
+                if (city != to_city) {
+                    set += "," + std::to_string(city) + ",";
+                }
+            }
+            int prev_dist = graph[from_city][num_of_city-1][set].dist;
+            int curr_dist = from_city > to_city ? distances[to_city][from_city] : distances[from_city][to_city];
+            int total_dist = prev_dist + curr_dist;
+            if (total_dist < dist) {
+                best_candidate.from_city = from_city;
+                best_candidate.dist = total_dist;
+            }
+        }
+        // printf("%d  %d  %s  %d  %d\n", to_city, (int)num_of_city, all_set.c_str(), best_candidate.from_city, best_candidate.dist);
+        // #pragma omp critical
+            graph[to_city][num_of_city][all_set] = best_candidate;
     }
-    return res;
 }
 
-candidate_t find_best_path(std::vector<candidate_t> candidates) {
-    size_t city = 0;
-    int distance = std::numeric_limits<int>::max();
+candidate_t find_best_path(const std::vector<candidate_t> &candidates) {
+    int city = 0;
+    int dist = std::numeric_limits<int>::max();
     for (size_t i = 0; i < candidates.size(); i++) {
-        candidate_t curr_candidate = candidates[i];
-        if (curr_candidate.distance < distance) {
-            city = curr_candidate.city;
-            distance = curr_candidate.distance;
+        candidate_t candidate = candidates[i];
+        if (candidate.dist < dist) {
+            city = candidate.from_city;
+            dist = candidate.dist;
         }
     }
     candidate_t res;
-    res.city = city;
-    res.distance = distance;
+    res.from_city = city;
+    res.dist = dist;
     return res;
 }
 
-std::string get_last_other_cities(size_t curr_city, size_t num_of_city) {
-    std::string res;
-    for (size_t i = 2; i <= num_of_city; i++) {
-        if (i != curr_city) {
-            res += std::to_string(i) + ",";
-        }
+void write_output(const std::vector<candidate_t> &path, const std::string &filename, const int dist) {
+    std::ofstream f(filename);
+    // f << path.size() + 1 << std::endl;
+    f << 0 << " ";
+    for (size_t i = 0; i < path.size(); i++) {
+        f << path[i].from_city - 1 << " ";
     }
-    return res;
+    f << std::endl;
+    f << dist << std::endl;
 }
