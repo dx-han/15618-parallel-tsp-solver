@@ -1,7 +1,7 @@
 #!/bin/bash
 PREFIX="../inputs/"
-FILES=("input_5_100x100.txt")
-PROGRAM="./exactopenmp"
+FILES=("input_20_100x100.txt")
+PROGRAM="./exactmpi"
 THREADS=(1 8 16 32 64 128)
 for FILE in ${FILES[@]}
 do
@@ -9,7 +9,7 @@ do
     do
         FILENAME=${PREFIX}${FILE}
         echo "================ ${FILENAME}, #Thread: ${THREAD} ================"
-        ${PROGRAM} -f ${FILENAME} -n ${THREAD}
+        mpirun -np ${THREAD} ${PROGRAM} -f ${FILENAME}
         echo
     done
 done

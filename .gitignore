@@ -1,3 +1,6 @@
 *.o
-tspopenmp
-test*
+output_*.txt
+exactopenmp
+exactmpi
+test
+test.cpp
