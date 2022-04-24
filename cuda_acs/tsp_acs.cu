@@ -10,7 +10,7 @@
 
 #include "CycleTimer.h"
 
-#define BLOCKSIZE 256
+#define BLOCKSIZE 512
 
 extern float toBW(int bytes, float sec);
 
@@ -23,7 +23,7 @@ const int num_ant = 64;
 const int seed = 1234;
 const bool use_candidate_list = true;
 const float t0 = 0.001f;
-const int num_iter = 20000;
+const int num_iter = 1024;
 const float pheromone_production = 1.f;
 
 struct GlobalConstants {
@@ -409,7 +409,7 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     int *best_tour = result;
     for (int i = 0; i < num_iter; ++i) {
         dim3 antGridDim(num_ant);
-        acsKernel<<<antGridDim, blockDim, N * (sizeof(int) + sizeof(int))>>>(i);
+        acsKernel<<<antGridDim, blockDim, N * (sizeof(bool) + sizeof(int))>>>(i);
         cudaDeviceSynchronize();
         cudaMemcpy(host_tour_length, device_ant_tour_length, sizeof(float) * num_ant, cudaMemcpyDeviceToHost);
         float best_ant_length = FLT_MAX;
