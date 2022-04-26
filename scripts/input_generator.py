@@ -1,6 +1,7 @@
 import random
+import sys
 
-number_of_city = 5
+number_of_city = int(sys.argv[1])
 dim_x = 100
 dim_y = dim_x
 filename = 'input_{}_{}x{}'.format(number_of_city, dim_x, dim_y)
