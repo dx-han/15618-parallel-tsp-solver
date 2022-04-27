@@ -3,7 +3,7 @@ PREFIX="../../inputs/"
 FILES=("input_100_1000x1000.txt")
 PROGRAM="./acsopenmp"
 THREADS=(8)
-ANT="60"
+ANT="64"
 for FILE in ${FILES[@]}
 do
     for THREAD in ${THREADS[@]}
