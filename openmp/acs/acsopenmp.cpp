@@ -19,7 +19,7 @@
 
 static int _argc;
 static const char **_argv;
-const int num_of_ant = 60;
+// const int num_of_ant = 60;
 const double beta = 2; //distance over pheromone weight
 const double q0 = 0.9; //ant colony system over ant system weight 
 const double rou = 0.1; //local update weight
@@ -54,6 +54,7 @@ int main(int argc, const char *argv[]) {
 
     const char *input_filename = get_option_string("-f", NULL);
     int num_of_threads = get_option_int("-n", 1);
+    int num_of_ant = get_option_int("-a", 1);
     
 
     if (input_filename == NULL) {
@@ -63,6 +64,7 @@ int main(int argc, const char *argv[]) {
 
     printf("Input filename: %s\n", input_filename);
     printf("Number of threads: %d\n", num_of_threads);
+    printf("Number of ants: %d\n", num_of_ant);
 
     omp_set_num_threads(num_of_threads);
     omp_set_nested(1);
