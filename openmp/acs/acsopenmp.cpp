@@ -123,7 +123,7 @@ int main(int argc, const char *argv[]) {
         ant_path[i].emplace_back(i + 2);
     }
 
-    std::vector<double> ant_path_distance(num_of_ant, 0.0);
+    // std::vector<double> ant_path_distance(num_of_ant, 0.0);
 
     init_time += duration_cast<dsec>(Clock::now() - init_start).count();
     printf("Initialization Time: %lf.\n", init_time);
@@ -135,7 +135,6 @@ int main(int argc, const char *argv[]) {
     std::mt19937 rand_eng;
     std::random_device r;
     rand_eng.seed(r());
-    // uniform_dist(rand_eng)
     int best_path_ant_id;
     double best_path_dist;
 
@@ -219,8 +218,7 @@ int main(int argc, const char *argv[]) {
                         }
                         #pragma omp critical
                             graph[city_r][city_s] = (1 - rou) * graph[city_r][city_s] + rou * pheromone0;
-                    }
-                
+                    } 
             }
             #pragma omp for schedule(static)
                 // local update for the last step to the initial city
@@ -236,7 +234,7 @@ int main(int argc, const char *argv[]) {
             best_path_ant_id = 0;
             best_path_dist = std::numeric_limits<double>::max();
             for (int j = 0; j < num_of_ant; j++) {
-                double v = ant_path_distance[j];
+                double v = 0.0;
                 for (int k = 1; k <= num_of_city; k++) {
                     int city_r = ant_path[j][k-1];
                     int city_s = ant_path[j][k];
@@ -257,8 +255,7 @@ int main(int argc, const char *argv[]) {
                     if (city_s < city_r) {
                         std::swap(city_r, city_s);
                     }
-                    #pragma omp critical
-                        graph[city_r][city_s] = (1 - alpha) * graph[city_r][city_s] + alpha * (1.0 / best_path_dist);
+                    graph[city_r][city_s] = (1 - alpha) * graph[city_r][city_s] + alpha * (1.0 / best_path_dist);
                 }
         }
     }
