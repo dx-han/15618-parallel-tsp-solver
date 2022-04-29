@@ -1,9 +1,9 @@
 #!/bin/bash
 PREFIX="../../inputs/"
-FILES=("input_100_1000x1000.txt")
+FILES=("input_1024_1000x1000.txt")
 PROGRAM="./acsopenmp"
 THREADS=(8)
-ANT="60"
+ANT="10"
 for FILE in ${FILES[@]}
 do
     for THREAD in ${THREADS[@]}

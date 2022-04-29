@@ -23,7 +23,7 @@ const double beta = 2; //distance over pheromone weight
 const double q0 = 0.9; //ant colony system over ant system weight 
 const double rou = 0.1; //local update weight
 const double alpha = 0.1; //global update weight, pheromone decay param
-const int num_of_iters = 1024;
+const int num_of_iters = 2048;
 
 
 const char *get_option_string(const char *option_name, const char *default_value) {
@@ -101,7 +101,7 @@ int main(int argc, const char *argv[]) {
     update_distances(distances, cities);
 
     pheromone_t pheromone0 = calculate_pheronome0(distances, num_of_city);
-    printf("init pheromone: %f\n", pheromone0);
+    printf("init pheromone: %.10f\n", pheromone0);
     std::unordered_map<int, std::unordered_map<int, pheromone_t>> graph;
     for (int i = 1; i <= num_of_city - 1; i++) {
         for (int j = i + 1; j <= num_of_city; j++) {
@@ -125,16 +125,14 @@ int main(int argc, const char *argv[]) {
     init_time += duration_cast<dsec>(Clock::now() - init_start).count();
     printf("Initialization Time: %lf.\n", init_time);
 
+    std::vector<double> ant_path_dist(num_of_ant, 0.0);
 
     /* ============= run ACS in parallel =============*/
     auto compute_start = Clock::now();
     double compute_time = 0;
-    // std::mt19937 rand_eng;
     std::random_device r;
-    // rand_eng.seed(r());
     int best_path_ant_id;
     double best_path_dist;
-
 
     // ants build tours
     #pragma omp parallel
@@ -198,18 +196,16 @@ int main(int argc, const char *argv[]) {
                             }
                             std::swap(ant_path[j][i], ant_path[j][city_s_pos]);
                         }
-                    }
-                #pragma omp for schedule(static)
-                    //local update
-                    for (int j = 0; j < num_of_ant; j++) {
+                        //update total dist for each ant
                         int city_r = ant_path[j][i-1];
                         int city_s = ant_path[j][i];
                         if (city_s < city_r) {
                             std::swap(city_r, city_s);
                         }
+                        ant_path_dist[j] += distances[city_r][city_s];
                         #pragma omp critical
                             graph[city_r][city_s] = (1 - rou) * graph[city_r][city_s] + rou * pheromone0;
-                    } 
+                    }
             }
             #pragma omp for schedule(static)
                 // local update for the last step to the initial city
@@ -219,24 +215,17 @@ int main(int argc, const char *argv[]) {
                     if (city_s < city_r) {
                         std::swap(city_r, city_s);
                     }
+                    ant_path_dist[j] += distances[city_r][city_s];
                     graph[city_r][city_s] = (1 - rou) * graph[city_r][city_s] + rou * pheromone0;
                 }
             // update pheronome on the best path
             best_path_ant_id = 0;
             best_path_dist = std::numeric_limits<double>::max();
             for (int j = 0; j < num_of_ant; j++) {
-                double v = 0.0;
-                for (int k = 1; k <= num_of_city; k++) {
-                    int city_r = ant_path[j][k-1];
-                    int city_s = ant_path[j][k];
-                    if (city_s < city_r) {
-                        std::swap(city_r, city_s);
-                    }
-                    v += distances[city_r][city_s];
-                }
+                double v = ant_path_dist[j];
                 if (v < best_path_dist) {
-                    best_path_dist = v;
                     best_path_ant_id = j;
+                    best_path_dist = v;
                 }
             }
             #pragma omp for schedule(static)
@@ -247,6 +236,10 @@ int main(int argc, const char *argv[]) {
                         std::swap(city_r, city_s);
                     }
                     graph[city_r][city_s] = (1 - alpha) * graph[city_r][city_s] + alpha * (1.0 / best_path_dist);
+                }
+            #pragma omp for schedule(static)
+                for (int k = 0; k < num_of_ant; k++) {
+                    ant_path_dist[k] = 0.0;
                 }
         }
     }
