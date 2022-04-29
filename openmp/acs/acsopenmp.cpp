@@ -19,7 +19,6 @@
 
 static int _argc;
 static const char **_argv;
-// const int num_of_ant = 60;
 const double beta = 2; //distance over pheromone weight
 const double q0 = 0.9; //ant colony system over ant system weight 
 const double rou = 0.1; //local update weight
@@ -123,8 +122,6 @@ int main(int argc, const char *argv[]) {
         ant_path[i].emplace_back(i + 2);
     }
 
-    // std::vector<double> ant_path_distance(num_of_ant, 0.0);
-
     init_time += duration_cast<dsec>(Clock::now() - init_start).count();
     printf("Initialization Time: %lf.\n", init_time);
 
@@ -132,9 +129,9 @@ int main(int argc, const char *argv[]) {
     /* ============= run ACS in parallel =============*/
     auto compute_start = Clock::now();
     double compute_time = 0;
-    std::mt19937 rand_eng;
+    // std::mt19937 rand_eng;
     std::random_device r;
-    rand_eng.seed(r());
+    // rand_eng.seed(r());
     int best_path_ant_id;
     double best_path_dist;
 
@@ -176,6 +173,7 @@ int main(int argc, const char *argv[]) {
                             int city_s_pos = -1;
                             std::vector<double> probability;
                             std::vector<int> probability_city_id;
+                            std::vector<double> prod_tmp;
                             for (int k = i; k <= num_of_city - 1; k++) {
                                 int candidate = ant_path[j][k];
                                 int city_r_copy = city_r;
@@ -183,19 +181,12 @@ int main(int argc, const char *argv[]) {
                                     std::swap(city_r_copy, candidate);
                                 }
                                 double prod = graph[city_r_copy][candidate] * pow(distances[city_r_copy][candidate], -beta);
+                                prod_tmp.emplace_back(prod);
+                                probability_city_id.emplace_back(k);
                                 acc += prod;
                             }
-                            // printf("acc:%.10f\n", acc);
-                            for (int k = i; k <= num_of_city - 1; k++) {
-                                int candidate = ant_path[j][k];
-                                int city_r_copy = city_r;
-                                if (candidate < city_r_copy) {
-                                    std::swap(city_r_copy, candidate);
-                                }
-                                // printf("graph: %.10f, %.10f, %d, %d\n", graph[city_r_copy][candidate], pow(distances[city_r_copy][candidate], -beta), city_r, candidate);
-                                double prod = graph[city_r_copy][candidate] * pow(distances[city_r_copy][candidate], -beta);
-                                probability.emplace_back(prod / acc);
-                                probability_city_id.emplace_back(k);
+                            for (size_t k = 0; k < prod_tmp.size(); k++) {
+                                probability.emplace_back(prod_tmp[k] / acc);
                             }
                             double rand = uniform_dist(rand_eng);
                             for (size_t z = 0; z < probability.size(); z++) {
