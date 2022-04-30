@@ -1,6 +1,6 @@
 #!/bin/bash
 PREFIX="../../inputs/"
-FILES=("input_5_100x100.txt")
+FILES=("input_20_100x100.txt")
 PROGRAM="./exactopenmp"
 THREADS=(1 8 16 32 64 128)
 for FILE in ${FILES[@]}
