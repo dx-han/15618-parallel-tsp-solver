@@ -23,7 +23,7 @@ const double beta = 2; //distance over pheromone weight
 const double q0 = 0.9; //ant colony system over ant system weight 
 const double rou = 0.1; //local update weight
 const double alpha = 0.1; //global update weight, pheromone decay param
-const int num_of_iters = 2048;
+const int num_of_iters = 2;
 
 
 const char *get_option_string(const char *option_name, const char *default_value) {
@@ -86,10 +86,10 @@ int main(int argc, const char *argv[]) {
         fscanf(input, "%d %d\n", &city.x, &city.y);
     }
 
-    if (num_of_city < num_of_ant) {
-        printf("The number of city must greater than the number of ant\n");
-        return 1;
-    }
+    // if (num_of_city < num_of_ant) {
+    //     printf("The number of city must greater than the number of ant\n");
+    //     return 1;
+    // }
 
     printf("Number of cities: %d\n", num_of_city);
     printf("Map size: %d x %d\n", dim_x, dim_y);
@@ -132,7 +132,7 @@ int main(int argc, const char *argv[]) {
     double compute_time = 0;
     std::random_device r;
     int best_path_ant_id;
-    double best_path_dist;
+    double best_path_dist = 0.0;
 
     // ants build tours
     #pragma omp parallel
@@ -145,10 +145,10 @@ int main(int argc, const char *argv[]) {
             for (int i = 1; i <= num_of_city - 1; i++) {
                 #pragma omp for schedule(static)
                     for (int j = 0; j < num_of_ant; j++) {
+                        int city_r = ant_path[j][i-1];
                         if (uniform_dist(rand_eng) <= q0) {
-                            //acs state transition rule
+                            // acs state transition rule
                             double v = 0.0;
-                            int city_r = ant_path[j][i-1];
                             int city_s_pos = -1;
                             for (int k = i; k <= num_of_city - 1; k++) {
                                 int candidate = ant_path[j][k];
@@ -164,10 +164,9 @@ int main(int argc, const char *argv[]) {
                             }
                             std::swap(ant_path[j][i], ant_path[j][city_s_pos]);
                         } else {
-                            //as state transition rule
+                            // as state transition rule
                             double v = 0.0;
                             double acc = 0.0;
-                            int city_r = ant_path[j][i-1];
                             int city_s_pos = -1;
                             std::vector<double> probability;
                             std::vector<int> probability_city_id;
@@ -196,8 +195,7 @@ int main(int argc, const char *argv[]) {
                             }
                             std::swap(ant_path[j][i], ant_path[j][city_s_pos]);
                         }
-                        //update total dist for each ant
-                        int city_r = ant_path[j][i-1];
+                        // update total dist for each ant
                         int city_s = ant_path[j][i];
                         if (city_s < city_r) {
                             std::swap(city_r, city_s);
@@ -218,7 +216,7 @@ int main(int argc, const char *argv[]) {
                     ant_path_dist[j] += distances[city_r][city_s];
                     graph[city_r][city_s] = (1 - rou) * graph[city_r][city_s] + rou * pheromone0;
                 }
-            // update pheronome on the best path
+            //update pheronome on the best path
             best_path_ant_id = 0;
             best_path_dist = std::numeric_limits<double>::max();
             for (int j = 0; j < num_of_ant; j++) {
@@ -245,19 +243,19 @@ int main(int argc, const char *argv[]) {
     }
     compute_time += duration_cast<dsec>(Clock::now() - compute_start).count();
     printf("Computation Time: %lf.\n", compute_time);
-    printf("Best total distance: %.10f\n", best_path_dist);
+    // printf("Best total distance: %.10f\n", best_path_dist);
     
-    std::vector<int> res;
-    for(int i = 0; i < num_of_city; i++) {
-        // printf("%d-", ant_path[best_path_ant_id][i]);
-        res.emplace_back(ant_path[best_path_ant_id][i]);
-    }
+    // std::vector<int> res;
+    // for(int i = 0; i < num_of_city; i++) {
+    //     // printf("%d-", ant_path[best_path_ant_id][i]);
+    //     res.emplace_back(ant_path[best_path_ant_id][i]);
+    // }
 
-    // write to output
-    std::stringstream output;
-    output << "output_" << std::to_string(num_of_city) << "_" << std::to_string(dim_x) << "x" << std::to_string(dim_y) << ".txt";
-    std::string output_filename = output.str();
-    write_output(res, output_filename, best_path_dist);
+    // // write to output
+    // std::stringstream output;
+    // output << "output_" << std::to_string(num_of_city) << "_" << std::to_string(dim_x) << "x" << std::to_string(dim_y) << ".txt";
+    // std::string output_filename = output.str();
+    // write_output(res, output_filename, best_path_dist);
 }
 
 
