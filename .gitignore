@@ -1,8 +1,8 @@
 *.o
 output_*.txt
-exactopenmp
-exactmpi
+# exactopenmp
+# exactmpi
 test
 test.cpp
-acsopenmp
-acsmpi
+# acsopenmp
+# acsmpi
