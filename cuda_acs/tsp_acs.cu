@@ -19,12 +19,13 @@ const float dist_coef = 2.f;
 const float local_coef = .1f;
 const int candidate_list_len = 64;
 const float exploration_prob = 0.1f;
-const int num_ant = 64;
+const int num_ant = 614;
 const int seed = 1234;
 const bool use_candidate_list = true;
 const float t0 = 0.001f;
-const int num_iter = 1024;
+const int num_iter = 256;
 const float pheromone_production = 1.f;
+bool run_2opt_for_each_iter = false;
 
 struct GlobalConstants {
     int *city_x;
@@ -340,7 +341,7 @@ __global__ void globalDecayKernel() {
     cuConsts.pheromone[index] *= 1.f - pheromone_decay;
 }
 
-__global__ void addPheromoneKernel(int best_ant) {
+__global__ void addPheromoneKernel(int best_ant, int tour_length) {
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     int N = cuConsts.N;
     if (index >= N) {
@@ -349,8 +350,65 @@ __global__ void addPheromoneKernel(int best_ant) {
     int *tour = cuConsts.ant_tour + best_ant * N;
     int from = tour[index];
     int to = tour[(index + 1) % N];
-    float tour_length = cuConsts.ant_tour_length[best_ant];
     cuConsts.pheromone[from * N + to] += pheromone_decay * pheromone_production / tour_length;
+}
+
+__global__ void check2OptKernel(int best_ant, int *improveTarget) {
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int N = cuConsts.N;
+    int halfN = N >> 1;
+    int edge1 = index / halfN;
+    if (edge1 >= N) {
+        return;
+    }
+    int edge2 = index % halfN;
+    if (edge1 <= edge2) {
+        edge1 = N - 1 - edge1;
+        edge2 = halfN + halfN - 1 - edge2;
+    }
+    if (edge1 >= N || edge2 >= N || edge1 <= edge2 || 
+        std::abs(edge1 - edge2) == 1 || std::abs(edge1 - edge2) == N - 1) {
+        return;
+    }
+
+    int *tour = cuConsts.ant_tour + best_ant * N;
+    float *distance = cuConsts.distance;
+    int v1 = tour[edge1];
+    int v2 = tour[(edge1 + 1) % N];
+    int v3 = tour[edge2];
+    int v4 = tour[(edge2 + 1) % N];
+    float old_sum = distance[v1 * N + v2] + distance[v3 * N + v4];
+    float new_sum = distance[v1 * N + v3] + distance[v2 * N + v4];
+    if (new_sum < old_sum) {
+        *improveTarget = edge1 * N + edge2;
+    }
+}
+
+__global__ void run2OptKernel(int best_ant, int target, float *distance_diff) {
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int N = cuConsts.N;
+    int edge1 = target / N;
+    int edge2 = target % N;
+    int diff = edge1 - edge2;
+    int max_index = (diff >> 1);
+    if (index >= max_index) {
+        return;
+    }
+    int *tour = cuConsts.ant_tour + best_ant * N;
+    if (index == 0) {
+        float *distance = cuConsts.distance;
+        int v1 = tour[edge1];
+        int v2 = tour[(edge1 + 1) % N];
+        int v3 = tour[edge2];
+        int v4 = tour[(edge2 + 1) % N];
+        float old_sum = distance[v1 * N + v2] + distance[v3 * N + v4];
+        float new_sum = distance[v1 * N + v3] + distance[v2 * N + v4];
+        *distance_diff = new_sum - old_sum;
+        // printf("e1=%d, e2=%d\n", edge1, edge2);
+    }
+    int tmp = tour[edge2 + 1 + index];
+    tour[edge2 + 1 + index] = tour[edge1 - index];
+    tour[edge1 - index] = tmp;
 }
 
 void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
@@ -366,6 +424,8 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     int *device_ant_tour;
     float *device_ant_tour_length;
     curandState *device_states;
+    int *device_improve_target;
+    float *device_distance_diff;
     cudaMalloc(&device_distance, sizeof(float) * N * N);
     cudaMalloc(&device_pheromone, sizeof(float) * N * N);
     cudaMalloc(&device_city_x, sizeof(int) * N);
@@ -375,6 +435,9 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     cudaMalloc(&device_ant_tour, sizeof(int) * num_ant * N);
     cudaMalloc(&device_ant_tour_length, sizeof(float) *num_ant);
     cudaMalloc(&device_states, sizeof(curandState) * num_ant);
+    cudaMalloc(&device_improve_target, sizeof(int));
+    cudaMalloc(&device_distance_diff, sizeof(float));
+
     //
     
 
@@ -404,6 +467,9 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     dim3 NGridDim((N + blockDim.x - 1) / blockDim.x);
     initDistKernel<<<NSquareGridDim, blockDim>>>();
     cudaDeviceSynchronize();
+    float *host_distance = new float[N * N];
+    cudaMemcpy(host_distance, device_distance, sizeof(float) * N * N, cudaMemcpyDeviceToHost);
+
     float host_tour_length[num_ant];
     float best_tour_length = FLT_MAX;
     int *best_tour = result;
@@ -420,12 +486,34 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
                 best_ant_length = host_tour_length[j];
             }
         }
+        dim3 check2optGridDim((N * (N >> 1) + blockDim.x - 1) / blockDim.x);
+        int improveTarget;
+        do {
+            if (!run_2opt_for_each_iter && i < num_iter - 1) {
+                break;
+            }
+            cudaMemset(device_improve_target, 0, sizeof(int));
+            check2OptKernel<<<check2optGridDim, blockDim>>>(best_ant, device_improve_target);
+            cudaDeviceSynchronize();
+            cudaMemcpy(&improveTarget, device_improve_target, sizeof(int), cudaMemcpyDeviceToHost);
+            if (improveTarget > 0) {
+                int edge1 = improveTarget / N;
+                int edge2 = improveTarget % N;
+                dim3 run2optGridDim(((edge1 - edge2) / 2 + blockDim.x - 1) / blockDim.x);
+                run2OptKernel<<<run2optGridDim, blockDim>>>(best_ant, improveTarget, device_distance_diff);
+                cudaDeviceSynchronize();
+                float distance_diff;
+                cudaMemcpy(&distance_diff, device_distance_diff, sizeof(float), cudaMemcpyDeviceToHost);
+                host_tour_length[best_ant] += distance_diff;
+                // printf("2-opt: e1=%d, e2=%d improved %f\n", edge1, edge2, -distance_diff);
+            }
+        } while (improveTarget > 0);
         globalDecayKernel<<<NSquareGridDim, blockDim>>>();
         cudaDeviceSynchronize();
-        addPheromoneKernel<<<NGridDim, blockDim>>>(best_ant);
+        addPheromoneKernel<<<NGridDim, blockDim>>>(best_ant, host_tour_length[best_ant]);
         cudaDeviceSynchronize();
-        if (best_ant_length < best_tour_length) {
-            best_tour_length = best_ant_length;
+        if (host_tour_length[best_ant] < best_tour_length) {
+            best_tour_length = host_tour_length[best_ant];
             cudaMemcpy(best_tour, &device_ant_tour[best_ant * N], sizeof(int) * N, cudaMemcpyDeviceToHost);
         }
         cudaDeviceSynchronize();
@@ -448,6 +536,7 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     double overallDuration = endTime - startTime;
     printf("Overall: %.3f ms\t\t[%.3f GB/s]\n", 1000.f * overallDuration, toBW(totalBytes, overallDuration));
 
+    delete[] host_distance;
     cudaFree(device_distance);
     cudaFree(device_pheromone);
     cudaFree(device_city_x);
@@ -457,6 +546,8 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     cudaFree(device_ant_tour);
     cudaFree(device_ant_tour_length);
     cudaFree(device_states);
+    cudaFree(device_improve_target);
+    cudaFree(device_distance_diff);
 }
 
 void printCudaInfo() {
