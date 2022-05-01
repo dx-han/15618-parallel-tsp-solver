@@ -32,6 +32,6 @@ with open(output, "r") as f:
 order_x = [cities_x[i] for i in order]
 order_y = [cities_y[i] for i in order]
 
-plt.scatter(cities_x, cities_y)
+# plt.scatter(cities_x, cities_y)
 plt.plot(order_x, order_y)
 plt.savefig("1.png")
