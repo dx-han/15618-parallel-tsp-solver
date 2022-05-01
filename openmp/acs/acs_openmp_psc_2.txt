@@ -1,0 +1,259 @@
+================ ../../inputs/TSP_input_128.txt, #Thread: 1 ================
+Input filename: ../../inputs/TSP_input_128.txt
+Number of threads: 1
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+init pheromone: 0.0000000760
+Initialization Time: 0.001890.
+Computation Time: 0.087742.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 8 ================
+Input filename: ../../inputs/TSP_input_128.txt
+Number of threads: 8
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+init pheromone: 0.0000000760
+Initialization Time: 0.001054.
+Computation Time: 0.014387.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 16 ================
+Input filename: ../../inputs/TSP_input_128.txt
+Number of threads: 16
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+init pheromone: 0.0000000760
+Initialization Time: 0.001261.
+Computation Time: 0.011340.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 32 ================
+Input filename: ../../inputs/TSP_input_128.txt
+Number of threads: 32
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+init pheromone: 0.0000000760
+Initialization Time: 0.001185.
+Computation Time: 0.013411.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 64 ================
+Input filename: ../../inputs/TSP_input_128.txt
+Number of threads: 64
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+init pheromone: 0.0000000760
+Initialization Time: 0.001273.
+Computation Time: 0.230545.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 1 ================
+Input filename: ../../inputs/TSP_input_256.txt
+Number of threads: 1
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+init pheromone: 0.0000000273
+Initialization Time: 0.004721.
+Computation Time: 0.749335.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 8 ================
+Input filename: ../../inputs/TSP_input_256.txt
+Number of threads: 8
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+init pheromone: 0.0000000273
+Initialization Time: 0.004170.
+Computation Time: 0.104487.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 16 ================
+Input filename: ../../inputs/TSP_input_256.txt
+Number of threads: 16
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+init pheromone: 0.0000000273
+Initialization Time: 0.004094.
+Computation Time: 0.060478.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 32 ================
+Input filename: ../../inputs/TSP_input_256.txt
+Number of threads: 32
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+init pheromone: 0.0000000273
+Initialization Time: 0.004289.
+Computation Time: 0.050178.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 64 ================
+Input filename: ../../inputs/TSP_input_256.txt
+Number of threads: 64
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+init pheromone: 0.0000000273
+Initialization Time: 0.004305.
+Computation Time: 0.170823.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 1 ================
+Input filename: ../../inputs/TSP_input_512.txt
+Number of threads: 1
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+init pheromone: 0.0000000089
+Initialization Time: 0.015661.
+Computation Time: 6.826696.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 8 ================
+Input filename: ../../inputs/TSP_input_512.txt
+Number of threads: 8
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+init pheromone: 0.0000000089
+Initialization Time: 0.016192.
+Computation Time: 0.889889.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 16 ================
+Input filename: ../../inputs/TSP_input_512.txt
+Number of threads: 16
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+init pheromone: 0.0000000089
+Initialization Time: 0.016033.
+Computation Time: 0.472536.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 32 ================
+Input filename: ../../inputs/TSP_input_512.txt
+Number of threads: 32
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+init pheromone: 0.0000000089
+Initialization Time: 0.016253.
+Computation Time: 0.285486.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 64 ================
+Input filename: ../../inputs/TSP_input_512.txt
+Number of threads: 64
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+init pheromone: 0.0000000089
+Initialization Time: 0.015799.
+Computation Time: 0.235233.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 1 ================
+Input filename: ../../inputs/TSP_input_1024.txt
+Number of threads: 1
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+init pheromone: 0.0000000034
+Initialization Time: 0.065262.
+Computation Time: 114.369446.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 8 ================
+Input filename: ../../inputs/TSP_input_1024.txt
+Number of threads: 8
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+init pheromone: 0.0000000034
+Initialization Time: 0.064594.
+Computation Time: 16.571479.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 16 ================
+Input filename: ../../inputs/TSP_input_1024.txt
+Number of threads: 16
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+init pheromone: 0.0000000034
+Initialization Time: 0.067875.
+Computation Time: 8.341226.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 32 ================
+Input filename: ../../inputs/TSP_input_1024.txt
+Number of threads: 32
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+init pheromone: 0.0000000034
+Initialization Time: 0.069047.
+Computation Time: 4.533177.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 64 ================
+Input filename: ../../inputs/TSP_input_1024.txt
+Number of threads: 64
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+init pheromone: 0.0000000034
+Initialization Time: 0.072116.
+Computation Time: 2.848988.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 64 ================
+Input filename: ../../inputs/TSP_input_128.txt
+Number of threads: 64
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+init pheromone: 0.0000000760
+Initialization Time: 0.001273.
+Computation Time: 0.230545.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 1 ================
+Input filename: ../../inputs/TSP_input_2048.txt
+Number of threads: 1
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+init pheromone: 0.0000000012
+Initialization Time: 0.276652.
+Computation Time: 1164.265638.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 8 ================
+Input filename: ../../inputs/TSP_input_2048.txt
+Number of threads: 8
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+init pheromone: 0.0000000012
+Initialization Time: 0.278987.
+Computation Time: 185.483876.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 16 ================
+Input filename: ../../inputs/TSP_input_2048.txt
+Number of threads: 16
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+init pheromone: 0.0000000012
+Initialization Time: 0.277519.
+Computation Time: 91.386030.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 32 ================
+Input filename: ../../inputs/TSP_input_2048.txt
+Number of threads: 32
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+init pheromone: 0.0000000012
+Initialization Time: 0.277755.
+Computation Time: 45.741314.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 64 ================
+Input filename: ../../inputs/TSP_input_2048.txt
+Number of threads: 64
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+init pheromone: 0.0000000012
+Initialization Time: 0.287055.
+Computation Time: 26.350205.
