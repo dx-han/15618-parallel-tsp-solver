@@ -243,19 +243,19 @@ int main(int argc, const char *argv[]) {
     }
     compute_time += duration_cast<dsec>(Clock::now() - compute_start).count();
     printf("Computation Time: %lf.\n", compute_time);
-    // printf("Best total distance: %.10f\n", best_path_dist);
+    printf("Best total distance: %.10f\n", best_path_dist);
     
-    // std::vector<int> res;
-    // for(int i = 0; i < num_of_city; i++) {
-    //     // printf("%d-", ant_path[best_path_ant_id][i]);
-    //     res.emplace_back(ant_path[best_path_ant_id][i]);
-    // }
+    std::vector<int> res;
+    for(int i = 0; i < num_of_city; i++) {
+        // printf("%d-", ant_path[best_path_ant_id][i]);
+        res.emplace_back(ant_path[best_path_ant_id][i]);
+    }
 
-    // // write to output
-    // std::stringstream output;
-    // output << "output_" << std::to_string(num_of_city) << "_" << std::to_string(dim_x) << "x" << std::to_string(dim_y) << ".txt";
-    // std::string output_filename = output.str();
-    // write_output(res, output_filename, best_path_dist);
+    // write to output
+    std::stringstream output;
+    output << "output_" << std::to_string(num_of_city) << "_" << std::to_string(dim_x) << "x" << std::to_string(dim_y) << ".txt";
+    std::string output_filename = output.str();
+    write_output(res, output_filename, best_path_dist);
 }
 
 
