@@ -154,7 +154,7 @@ void compute(int procID, int nproc, char *inputFilename, int num_of_ant, double 
     }
     
     eTime = MPI_Wtime();
-    printf("ProcID: %d, Initialization Time: %lf.\n", procID, eTime - sTime);
+    // printf("ProcID: %d, Initialization Time: %lf.\n", procID, eTime - sTime);
     std::vector<double> ant_path_dist(job_int_cnt * nproc, 0.0);
 
     /* ============= run Held-Karp in parallel =============*/
@@ -299,7 +299,7 @@ void compute(int procID, int nproc, char *inputFilename, int num_of_ant, double 
     std::vector<double>compute_time_record(nproc);
     eTime = MPI_Wtime();
     double compute_time = eTime - sTime;
-    printf("Computation Time for proc %d: %lf.\n", procID, compute_time);
+    // printf("Computation Time for proc %d: %lf.\n", procID, compute_time);
 
     MPI_Gather(&compute_time, 1, MPI_DOUBLE, compute_time_record.data(), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
