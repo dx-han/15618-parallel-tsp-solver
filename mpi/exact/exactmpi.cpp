@@ -77,7 +77,7 @@ void compute(int procID, int nproc, char *inputFilename, double *startTime, doub
     double eTime;
     *startTime = MPI_Wtime();
 
-    /* ============= initialization =============*/
+    
     sTime = MPI_Wtime();
     FILE *input = fopen(inputFilename, "r");
     if (!input) {
@@ -93,14 +93,16 @@ void compute(int procID, int nproc, char *inputFilename, double *startTime, doub
         fscanf(input, "%d %d\n", &city.x, &city.y);
     }
 
-    // record distance between each city, outer map city id is smaller than inner map city id
-    std::unordered_map<int, std::unordered_map<int, int>> distances;
-    update_distances(distances, cities);
-
     if (procID == 0) {
         printf("Number of cities: %d\n", num_of_city);
         printf("Map size: %d x %d\n", dim_x, dim_y);
     }
+
+    /* ============= initialization =============*/
+
+    // record distance between each city, outer map city id is smaller than inner map city id
+    std::unordered_map<int, std::unordered_map<int, int>> distances;
+    update_distances(distances, cities);
 
     /* run combinations for initialization in parallel */
     std::unordered_map<int, std::vector<std::vector<int>>> combinations;
