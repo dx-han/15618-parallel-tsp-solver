@@ -1,0 +1,399 @@
+================ ../../inputs/TSP_input_10.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_10.txt
+NUmber of threads: 1
+Number of ants: 6
+Number of cities: 10
+Map size: 10000 x 10000
+General computation time: 0.000145.
+
+================ ../../inputs/TSP_input_10.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_10.txt
+NUmber of threads: 8
+Number of ants: 6
+Number of cities: 10
+Map size: 10000 x 10000
+General computation time: 0.000173.
+
+================ ../../inputs/TSP_input_10.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_10.txt
+NUmber of threads: 16
+Number of ants: 6
+Number of cities: 10
+Map size: 10000 x 10000
+General computation time: 0.000169.
+
+================ ../../inputs/TSP_input_10.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_10.txt
+NUmber of threads: 32
+Number of ants: 6
+Number of cities: 10
+Map size: 10000 x 10000
+General computation time: 0.000272.
+
+================ ../../inputs/TSP_input_10.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_10.txt
+NUmber of threads: 64
+Number of ants: 6
+Number of cities: 10
+Map size: 10000 x 10000
+General computation time: 0.000409.
+
+================ ../../inputs/TSP_input_15.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_15.txt
+NUmber of threads: 1
+Number of ants: 9
+Number of cities: 15
+Map size: 10000 x 10000
+General computation time: 0.000258.
+
+================ ../../inputs/TSP_input_15.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_15.txt
+NUmber of threads: 8
+Number of ants: 9
+Number of cities: 15
+Map size: 10000 x 10000
+General computation time: 0.000208.
+
+================ ../../inputs/TSP_input_15.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_15.txt
+NUmber of threads: 16
+Number of ants: 9
+Number of cities: 15
+Map size: 10000 x 10000
+General computation time: 0.000276.
+
+================ ../../inputs/TSP_input_15.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_15.txt
+NUmber of threads: 32
+Number of ants: 9
+Number of cities: 15
+Map size: 10000 x 10000
+General computation time: 0.000314.
+
+================ ../../inputs/TSP_input_15.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_15.txt
+NUmber of threads: 64
+Number of ants: 9
+Number of cities: 15
+Map size: 10000 x 10000
+General computation time: 0.000506.
+
+================ ../../inputs/TSP_input_20.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_20.txt
+NUmber of threads: 1
+Number of ants: 12
+Number of cities: 20
+Map size: 10000 x 10000
+General computation time: 0.000483.
+
+================ ../../inputs/TSP_input_20.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_20.txt
+NUmber of threads: 8
+Number of ants: 12
+Number of cities: 20
+Map size: 10000 x 10000
+General computation time: 0.000316.
+
+================ ../../inputs/TSP_input_20.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_20.txt
+NUmber of threads: 16
+Number of ants: 12
+Number of cities: 20
+Map size: 10000 x 10000
+General computation time: 0.000346.
+
+================ ../../inputs/TSP_input_20.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_20.txt
+NUmber of threads: 32
+Number of ants: 12
+Number of cities: 20
+Map size: 10000 x 10000
+General computation time: 0.000371.
+
+================ ../../inputs/TSP_input_20.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_20.txt
+NUmber of threads: 64
+Number of ants: 12
+Number of cities: 20
+Map size: 10000 x 10000
+General computation time: 0.000649.
+
+================ ../../inputs/TSP_input_25.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_25.txt
+NUmber of threads: 1
+Number of ants: 15
+Number of cities: 25
+Map size: 10000 x 10000
+General computation time: 0.000771.
+
+================ ../../inputs/TSP_input_25.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_25.txt
+NUmber of threads: 8
+Number of ants: 15
+Number of cities: 25
+Map size: 10000 x 10000
+General computation time: 0.000341.
+
+================ ../../inputs/TSP_input_25.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_25.txt
+NUmber of threads: 16
+Number of ants: 15
+Number of cities: 25
+Map size: 10000 x 10000
+General computation time: 0.000423.
+
+================ ../../inputs/TSP_input_25.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_25.txt
+NUmber of threads: 32
+Number of ants: 15
+Number of cities: 25
+Map size: 10000 x 10000
+General computation time: 0.000483.
+
+================ ../../inputs/TSP_input_25.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_25.txt
+NUmber of threads: 64
+Number of ants: 15
+Number of cities: 25
+Map size: 10000 x 10000
+General computation time: 0.000658.
+
+================ ../../inputs/TSP_input_27.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_27.txt
+NUmber of threads: 1
+Number of ants: 16
+Number of cities: 27
+Map size: 10000 x 10000
+General computation time: 0.000984.
+
+================ ../../inputs/TSP_input_27.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_27.txt
+NUmber of threads: 8
+Number of ants: 16
+Number of cities: 27
+Map size: 10000 x 10000
+General computation time: 0.000382.
+
+================ ../../inputs/TSP_input_27.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_27.txt
+NUmber of threads: 16
+Number of ants: 16
+Number of cities: 27
+Map size: 10000 x 10000
+General computation time: 0.000429.
+
+================ ../../inputs/TSP_input_27.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_27.txt
+NUmber of threads: 32
+Number of ants: 16
+Number of cities: 27
+Map size: 10000 x 10000
+General computation time: 0.000481.
+
+================ ../../inputs/TSP_input_27.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_27.txt
+NUmber of threads: 64
+Number of ants: 16
+Number of cities: 27
+Map size: 10000 x 10000
+General computation time: 0.000837.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_128.txt
+NUmber of threads: 1
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+General computation time: 0.088182.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_128.txt
+NUmber of threads: 8
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+General computation time: 0.013190.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_128.txt
+NUmber of threads: 16
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+General computation time: 0.008312.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_128.txt
+NUmber of threads: 32
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+General computation time: 0.005623.
+
+================ ../../inputs/TSP_input_128.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_128.txt
+NUmber of threads: 64
+Number of ants: 76
+Number of cities: 128
+Map size: 10000 x 10000
+General computation time: 0.005250.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_256.txt
+NUmber of threads: 1
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+General computation time: 0.746260.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_256.txt
+NUmber of threads: 8
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+General computation time: 0.111350.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_256.txt
+NUmber of threads: 16
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+General computation time: 0.059392.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_256.txt
+NUmber of threads: 32
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+General computation time: 0.033234.
+
+================ ../../inputs/TSP_input_256.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_256.txt
+NUmber of threads: 64
+Number of ants: 153
+Number of cities: 256
+Map size: 10000 x 10000
+General computation time: 0.025833.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_512.txt
+NUmber of threads: 1
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+General computation time: 6.770157.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_512.txt
+NUmber of threads: 8
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+General computation time: 1.852339.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_512.txt
+NUmber of threads: 16
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+General computation time: 1.011223.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_512.txt
+NUmber of threads: 32
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+General computation time: 0.571291.
+
+================ ../../inputs/TSP_input_512.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_512.txt
+NUmber of threads: 64
+Number of ants: 307
+Number of cities: 512
+Map size: 10000 x 10000
+General computation time: 0.350540.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_1024.txt
+NUmber of threads: 1
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+General computation time: 114.635642.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_1024.txt
+NUmber of threads: 8
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+General computation time: 19.313301.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_1024.txt
+NUmber of threads: 16
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+General computation time: 10.683891.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_1024.txt
+NUmber of threads: 32
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+General computation time: 5.950623.
+
+================ ../../inputs/TSP_input_1024.txt, #Thread: 64 ================
+Input file: ../../inputs/TSP_input_1024.txt
+NUmber of threads: 64
+Number of ants: 614
+Number of cities: 1024
+Map size: 10000 x 10000
+General computation time: 3.718730.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 1 ================
+Input file: ../../inputs/TSP_input_2048.txt
+NUmber of threads: 1
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+General computation time: 1207.176281.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 8 ================
+Input file: ../../inputs/TSP_input_2048.txt
+NUmber of threads: 8
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+General computation time: 223.771861.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 16 ================
+Input file: ../../inputs/TSP_input_2048.txt
+NUmber of threads: 16
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+General computation time: 119.015225.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_2048.txt
+NUmber of threads: 32
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+General computation time: 65.564926.
+
+================ ../../inputs/TSP_input_2048.txt, #Thread: 32 ================
+Input file: ../../inputs/TSP_input_2048.txt
+NUmber of threads: 32
+Number of ants: 1228
+Number of cities: 2048
+Map size: 10000 x 10000
+General computation time: 33.443323.
