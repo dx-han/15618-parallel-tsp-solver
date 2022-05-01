@@ -390,7 +390,7 @@ Number of cities: 2048
 Map size: 10000 x 10000
 General computation time: 65.564926.
 
-================ ../../inputs/TSP_input_2048.txt, #Thread: 32 ================
+================ ../../inputs/TSP_input_2048.txt, #Thread: 64 ================
 Input file: ../../inputs/TSP_input_2048.txt
 NUmber of threads: 32
 Number of ants: 1228
