@@ -2,7 +2,7 @@
 PREFIX="../../inputs/"
 FILES=("input_1024_1000x1000.txt")
 PROGRAM="./acsopenmp"
-THREADS=(1 8 16 32 64 128)
+THREADS=(8)
 ANT="614"
 for FILE in ${FILES[@]}
 do
