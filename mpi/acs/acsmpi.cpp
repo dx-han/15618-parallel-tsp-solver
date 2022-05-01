@@ -268,10 +268,6 @@ void compute(int procID, int nproc, char *inputFilename, int num_of_ant, double 
         MPI_Gather(job_path_dist.data(), job_int_cnt, MPI_DOUBLE, ant_path_dist.data(), job_int_cnt, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(ant_path_dist.data(), job_int_cnt * nproc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-        // for (int j = 0; j < num_of_ant; j++) {
-        //     printf("%.2f-", ant_path_dist[j]);
-        // }
-        // printf("\n");
         // update pheronome on the best path
         best_path_ant_id = 0;
         best_path_dist = std::numeric_limits<double>::max();
@@ -383,120 +379,6 @@ pheromone_t calculate_pheronome0(std::unordered_map<int, std::unordered_map<int,
     total_closest_dist += distances[1][r];
     return 1.0 / (num_of_city * total_closest_dist);
 }
-
-// std::vector<std::vector<int>> get_combination(int n, int k) {
-//     std::vector<std::vector<int>> res;
-//     std::vector<int> curr;
-//     // start from city 2
-//     helper(2, k, n, curr, res);
-//     return res;
-// }
-
-// void helper(int idx, int k, int n, std::vector<int> &curr, std::vector<std::vector<int>> &res) {
-//     if ((int)curr.size() == k) {
-//         res.emplace_back(curr);
-//         return;
-//     }
-//     // start from 2, so end with n + 2 instead of n + 1
-//     for (int i = idx; i < n + 2; i++) {
-//         curr.emplace_back(i);
-//         helper(i + 1, k, n, curr, res);
-//         curr.pop_back();
-//     }
-// }
-
-// void initiate_graph(std::unordered_map<int, std::vector<std::vector<int>>> &combinations, std::unordered_map<int, std::unordered_map<int, int>> &distances, std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> &graph) {
-//     for (size_t num_of_city_in_subset = 2; num_of_city_in_subset <= combinations.size(); num_of_city_in_subset++) {
-//         std::vector<std::vector<int>> subsets = combinations[num_of_city_in_subset];
-//         for (size_t i = 0; i < subsets.size(); i++) {
-//             std::vector<int> subset = subsets[i];
-//             std::string path = "";
-//             for (size_t j = 0; j < subset.size(); j++) {
-//                 path += "," + std::to_string(subset[j]) + ",";
-//             }
-//             candidate_t new_candidate;
-//             for (size_t j = 0; j < subset.size(); j++) {
-//                 int city = subset[j];
-//                 graph[city][num_of_city_in_subset][path] = new_candidate;
-//             }
-//         }
-//     }
-// }
-
-
-// void update_graph(
-//     const std::vector<int> &subset, 
-//     std::unordered_map<int, std::unordered_map<int, int>> &distances, 
-//     std::unordered_map<size_t, std::unordered_map<size_t, std::unordered_map<std::string, candidate_t>>> &graph,
-//     std::vector<size_t> &graph_lv1_city,
-//     std::vector<size_t> &graph_lv2_subset,
-//     std::vector<size_t> &graph_lv3_str,
-//     std::vector<candidate_t> &graph_lv4_candidate) {
-//     size_t num_of_city = subset.size();
-//     for (size_t i = 0; i < subset.size(); i++) {
-//         int to_city = subset[i];
-//         int dist = std::numeric_limits<int>::max();
-//         std::string all_set = "";
-//         for (size_t j = 0; j < subset.size(); j++) {
-//             all_set += "," + std::to_string(subset[j]) + ",";
-//             graph_lv3_str.emplace_back(subset[j]);
-//         }
-//         candidate_t best_candidate;
-//         for (size_t j = 0; j < subset.size(); j++) {
-//             int from_city = subset[j];
-//             if (to_city == from_city) continue;
-//             std::string set = "";
-//             for (size_t k = 0; k < subset.size(); k++) {
-//                 int city = subset[k];
-//                 if (city != to_city) {
-//                     set += "," + std::to_string(city) + ",";
-//                 }
-//             }
-//             int prev_dist = graph[from_city][num_of_city-1][set].dist;
-//             int curr_dist = from_city > to_city ? distances[to_city][from_city] : distances[from_city][to_city];
-//             int total_dist = prev_dist + curr_dist;
-//             if (total_dist < dist) {
-//                 best_candidate.from_city = from_city;
-//                 best_candidate.dist = total_dist;
-//                 dist = total_dist;
-//             }
-//         }
-//         // printf("%d  %d  %s  %d  %d\n", to_city, (int)num_of_city, all_set.c_str(), best_candidate.from_city, best_candidate.dist);
-//         // #pragma omp critical
-//             graph[to_city][num_of_city][all_set] = best_candidate;
-//             graph_lv1_city.emplace_back(to_city);
-//             graph_lv2_subset.emplace_back(num_of_city);
-
-//             graph_lv4_candidate.emplace_back(best_candidate);
-//     }
-// }
-
-// candidate_t find_best_path(const std::vector<candidate_t> &candidates) {
-//     int city = 0;
-//     int dist = std::numeric_limits<int>::max();
-//     for (size_t i = 0; i < candidates.size(); i++) {
-//         candidate_t candidate = candidates[i];
-//         if (candidate.dist < dist) {
-//             city = candidate.from_city;
-//             dist = candidate.dist;
-//         }
-//     }
-//     candidate_t res;
-//     res.from_city = city;
-//     res.dist = dist;
-//     return res;
-// }
-
-// void write_output(const std::vector<candidate_t> &path, const std::string &filename, const int dist) {
-//     std::ofstream f(filename);
-//     // f << path.size() + 1 << std::endl;
-//     f << 0 << " ";
-//     for (size_t i = 0; i < path.size(); i++) {
-//         f << path[i].from_city - 1 << " ";
-//     }
-//     f << std::endl;
-//     f << dist << std::endl;
-// }
 
 void write_output(const std::vector<int> &path, const std::string &filename, int dist) {
     std::ofstream f(filename);
