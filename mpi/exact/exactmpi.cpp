@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
     // Cleanup
     MPI_Finalize();
-    printf("Elapsed time for proc %d: %f\n", procID, endTime - startTime);
+    // printf("Elapsed time for proc %d: %f\n", procID, endTime - startTime);
     return 0;
 }
 
@@ -134,12 +134,11 @@ void compute(int procID, int nproc, char *inputFilename, double *startTime, doub
         other_city_except_city1 += "," + std::to_string(i) + ",";
     }
     eTime = MPI_Wtime();
-    printf("ProcID: %d, Initialization Time: %lf.\n", procID, eTime - sTime);
+    // printf("ProcID: %d, Initialization Time: %lf.\n", procID, eTime - sTime);
 
     /* ============= run Held-Karp in parallel =============*/
     sTime = MPI_Wtime();
     for (int num_of_city_in_subset = 2; num_of_city_in_subset <= num_of_city - 1; num_of_city_in_subset++) {
-        MPI_Barrier(MPI_COMM_WORLD);
         size_t num_of_subset = combinations[num_of_city_in_subset].size();
         std::vector<int> job_cnt;
         for (size_t i = 0; i < num_of_subset; i++) {
@@ -172,31 +171,35 @@ void compute(int procID, int nproc, char *inputFilename, double *startTime, doub
             graph_size = (int)graph_lv1_city.size();
         }
         MPI_Bcast(&graph_size, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        while (graph_size > (int)graph_lv1_city.size()) {
-            graph_lv1_city.emplace_back(-1);
-            graph_lv2_subset.emplace_back(-1);
-            graph_lv3_str.emplace_back(-1);
-            candidate_t new_candidate;
-            graph_lv4_candidate.emplace_back(new_candidate);
-        }
+        graph_lv1_city.resize(graph_size);
+        graph_lv2_subset.resize(graph_size);
+        graph_lv3_str.resize(graph_size * num_of_city_in_subset);
+        graph_lv4_candidate.resize(graph_size);
+        // while (graph_size > (int)graph_lv1_city.size()) {
+        //     graph_lv1_city.emplace_back(-1);
+        //     graph_lv2_subset.emplace_back(-1);
+        //     graph_lv3_str.emplace_back(-1);
+        //     candidate_t new_candidate;
+        //     graph_lv4_candidate.emplace_back(new_candidate);
+        // }
 
         std::vector<size_t> graph_lv1_city_gather(graph_size * nproc);
         std::vector<size_t> graph_lv2_subset_gather(graph_size * nproc);
         std::vector<size_t> graph_lv3_str_gather(graph_size * num_of_city_in_subset * nproc);
         std::vector<candidate_t> graph_lv4_candidate_gather(graph_size * nproc);
 
-        MPI_Gather(graph_lv1_city.data(), graph_size * sizeof(graph_lv1_city[0]) / sizeof(int), MPI_INT, graph_lv1_city_gather.data(), graph_size * sizeof(graph_lv1_city[0]) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Gather(graph_lv2_subset.data(), graph_size * sizeof(graph_lv2_subset[0]) / sizeof(int), MPI_INT, graph_lv2_subset_gather.data(), graph_size * sizeof(graph_lv2_subset[0]) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Gather(graph_lv3_str.data(), graph_size * num_of_city_in_subset * sizeof(graph_lv3_str[0]) / sizeof(int), MPI_INT, graph_lv3_str_gather.data(), graph_size * num_of_city_in_subset * sizeof(graph_lv3_str[0]) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Gather(graph_lv1_city.data(), graph_size * sizeof(graph_lv1_city[0]) / sizeof(short), MPI_SHORT, graph_lv1_city_gather.data(), graph_size * sizeof(graph_lv1_city[0]) / sizeof(short), MPI_SHORT, 0, MPI_COMM_WORLD);
+        MPI_Gather(graph_lv2_subset.data(), graph_size * sizeof(graph_lv2_subset[0]) / sizeof(short), MPI_SHORT, graph_lv2_subset_gather.data(), graph_size * sizeof(graph_lv2_subset[0]) / sizeof(short), MPI_SHORT, 0, MPI_COMM_WORLD);
+        MPI_Gather(graph_lv3_str.data(), graph_size * num_of_city_in_subset * sizeof(graph_lv3_str[0]) / sizeof(short), MPI_SHORT, graph_lv3_str_gather.data(), graph_size * num_of_city_in_subset * sizeof(graph_lv3_str[0]) / sizeof(short), MPI_SHORT, 0, MPI_COMM_WORLD);
         MPI_Gather(graph_lv4_candidate.data(), graph_size * sizeof(candidate_t) / sizeof(int), MPI_INT, graph_lv4_candidate_gather.data(), graph_size * sizeof(candidate_t) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(graph_lv1_city_gather.data(), graph_size * nproc * sizeof(graph_lv1_city[0]) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(graph_lv2_subset_gather.data(), graph_size * nproc * sizeof(graph_lv2_subset[0]) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
-        MPI_Bcast(graph_lv3_str_gather.data(), graph_size * num_of_city_in_subset * nproc * sizeof(graph_lv3_str[0]) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(graph_lv1_city_gather.data(), graph_size * nproc * sizeof(graph_lv1_city[0]) / sizeof(short), MPI_SHORT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(graph_lv2_subset_gather.data(), graph_size * nproc * sizeof(graph_lv2_subset[0]) / sizeof(short), MPI_SHORT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(graph_lv3_str_gather.data(), graph_size * num_of_city_in_subset * nproc * sizeof(graph_lv3_str[0]) / sizeof(short), MPI_SHORT, 0, MPI_COMM_WORLD);
         MPI_Bcast(graph_lv4_candidate_gather.data(), graph_size * nproc * sizeof(candidate_t) / sizeof(int), MPI_INT, 0, MPI_COMM_WORLD);
         for (size_t i = 0; i < graph_lv1_city_gather.size(); i++) {
-            if (graph_lv1_city_gather[i] == -1) continue;
-            int lv1 = graph_lv1_city_gather[i];
-            int lv2 = graph_lv2_subset_gather[i];
+            if (graph_lv1_city_gather[i] == -1) break;
+            int lv1 = (int)graph_lv1_city_gather[i];
+            int lv2 = (int)graph_lv2_subset_gather[i];
             std::string lv3 = "";
             for (size_t j = 0; j < num_of_city_in_subset; j++) {
                 lv3 += "," + std::to_string(graph_lv3_str_gather[num_of_city_in_subset * i + j]) + ",";
@@ -205,51 +208,63 @@ void compute(int procID, int nproc, char *inputFilename, double *startTime, doub
             graph[lv1][lv2][lv3] = lv4;
         }
     }
+
+    std::vector<double>compute_time_record(nproc);
     eTime = MPI_Wtime();
+    double compute_time = eTime - sTime;
+    // printf("Computation Time for proc %d: %lf.\n", procID, compute_time);
 
-    printf("Computation Time for proc %d: %lf.\n", procID, eTime - sTime);
-
-    for (int i = 0; i < num_of_city - 1; i++) {
-        int from_city = i + 2; // 2...n
-        int to_city = 1;
-        int prev_dist = graph[from_city][num_of_city-1][other_city_except_city1].dist;
-        int curr_dist = distances[to_city][from_city];
-        candidate_t candidate;
-        candidate.from_city = from_city;
-        candidate.dist = curr_dist + prev_dist;
-        last_candidates[i] = candidate;
-    }
-
-    // go through the last layer of graph can get the best path
-    candidate_t last_best_path = find_best_path(last_candidates);
-
-    std::vector<candidate_t> best_path;
-    best_path.emplace_back(last_best_path);
-    std::string path_gone = "";
-    for (int num_of_city_in_subset = num_of_city - 1; num_of_city_in_subset > 1; num_of_city_in_subset--) {
-        int to_city = best_path.back().from_city;
-        std::string next_path = "";
-        for (int i = 2; i <= num_of_city; i++) {
-            std::size_t found = path_gone.find("," + std::to_string(i) + ",");
-            if (found != std::string::npos) continue;
-            next_path += "," + std::to_string(i) + ",";
-        }
-        path_gone += "," + std::to_string(to_city) + ",";
-        candidate_t candidate = graph[to_city][num_of_city_in_subset][next_path];
-        best_path.emplace_back(candidate);
-    }
-
-    int total_dist = last_best_path.dist;
-
-    *endTime = MPI_Wtime();
+    MPI_Gather(&compute_time, 1, MPI_DOUBLE, compute_time_record.data(), 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     // write to file
     if (procID == 0) {
+        double general_computation_time = std::numeric_limits<double>::max();
+        for (size_t i = 0; i < compute_time_record.size(); i++) {
+            if (general_computation_time > compute_time_record[i]) {
+                general_computation_time = compute_time_record[i];
+            }
+        }
+        printf("General computation time: %.6f.\n", general_computation_time);
+
+        for (int i = 0; i < num_of_city - 1; i++) {
+            int from_city = i + 2; // 2...n
+            int to_city = 1;
+            int prev_dist = graph[from_city][num_of_city-1][other_city_except_city1].dist;
+            int curr_dist = distances[to_city][from_city];
+            candidate_t candidate;
+            candidate.from_city = from_city;
+            candidate.dist = curr_dist + prev_dist;
+            last_candidates[i] = candidate;
+        }
+
+        // go through the last layer of graph can get the best path
+        candidate_t last_best_path = find_best_path(last_candidates);
+
+        std::vector<candidate_t> best_path;
+        best_path.emplace_back(last_best_path);
+        std::string path_gone = "";
+        for (int num_of_city_in_subset = num_of_city - 1; num_of_city_in_subset > 1; num_of_city_in_subset--) {
+            int to_city = best_path.back().from_city;
+            std::string next_path = "";
+            for (int i = 2; i <= num_of_city; i++) {
+                std::size_t found = path_gone.find("," + std::to_string(i) + ",");
+                if (found != std::string::npos) continue;
+                next_path += "," + std::to_string(i) + ",";
+            }
+            path_gone += "," + std::to_string(to_city) + ",";
+            candidate_t candidate = graph[to_city][num_of_city_in_subset][next_path];
+            best_path.emplace_back(candidate);
+        }
+
+        int total_dist = last_best_path.dist;
+
         std::stringstream output;
         output << "output_" << std::to_string(num_of_city) << "_" << std::to_string(dim_x) << "x" << std::to_string(dim_y) << ".txt";
         std::string output_filename = output.str();
         write_output(best_path, output_filename, total_dist);
     }
+
+    *endTime = MPI_Wtime();
     return;
 }
 
@@ -330,7 +345,7 @@ void update_graph(
         std::string all_set = "";
         for (size_t j = 0; j < subset.size(); j++) {
             all_set += "," + std::to_string(subset[j]) + ",";
-            graph_lv3_str.emplace_back(subset[j]);
+            graph_lv3_str.emplace_back((short)subset[j]);
         }
         candidate_t best_candidate;
         for (size_t j = 0; j < subset.size(); j++) {
@@ -355,9 +370,8 @@ void update_graph(
         // printf("%d  %d  %s  %d  %d\n", to_city, (int)num_of_city, all_set.c_str(), best_candidate.from_city, best_candidate.dist);
         // #pragma omp critical
             graph[to_city][num_of_city][all_set] = best_candidate;
-            graph_lv1_city.emplace_back(to_city);
-            graph_lv2_subset.emplace_back(num_of_city);
-
+            graph_lv1_city.emplace_back((short)to_city);
+            graph_lv2_subset.emplace_back((short)num_of_city);
             graph_lv4_candidate.emplace_back(best_candidate);
     }
 }
