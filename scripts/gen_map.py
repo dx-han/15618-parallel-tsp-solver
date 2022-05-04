@@ -1,7 +1,7 @@
 import random
 import sys
 
-map_size = 1000
+map_size = 10000
 
 if len(sys.argv) < 3:
     print("Usage: python3 gen_map.py [number of cities] [target_foler]")

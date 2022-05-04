@@ -1,0 +1,58 @@
+Input filename: ../../inputs/input_1024_1000x1000.txt
+Number of threads: 1
+Number of ants: 614
+Number of cities: 1024
+Map size: 1000 x 1000
+init pheromone: 0.0000000322
+Initialization Time: 0.074675.
+Computation Time: 139.115273.
+
+================ ../../inputs/input_1024_1000x1000.txt, #Thread: 8 ================
+Input filename: ../../inputs/input_1024_1000x1000.txt
+Number of threads: 8
+Number of ants: 614
+Number of cities: 1024
+Map size: 1000 x 1000
+init pheromone: 0.0000000322
+Initialization Time: 0.066936.
+Computation Time: 16.870276.
+
+================ ../../inputs/input_1024_1000x1000.txt, #Thread: 16 ================
+Input filename: ../../inputs/input_1024_1000x1000.txt
+Number of threads: 16
+Number of ants: 614
+Number of cities: 1024
+Map size: 1000 x 1000
+init pheromone: 0.0000000322
+Initialization Time: 0.075372.
+Computation Time: 9.348672.
+
+================ ../../inputs/input_1024_1000x1000.txt, #Thread: 32 ================
+Input filename: ../../inputs/input_1024_1000x1000.txt
+Number of threads: 32
+Number of ants: 614
+Number of cities: 1024
+Map size: 1000 x 1000
+init pheromone: 0.0000000322
+Initialization Time: 0.071651.
+Computation Time: 5.253285.
+
+================ ../../inputs/input_1024_1000x1000.txt, #Thread: 64 ================
+Input filename: ../../inputs/input_1024_1000x1000.txt
+Number of threads: 64
+Number of ants: 614
+Number of cities: 1024
+Map size: 1000 x 1000
+init pheromone: 0.0000000322
+Initialization Time: 0.069226.
+Computation Time: 4.861980.
+
+================ ../../inputs/input_1024_1000x1000.txt, #Thread: 128 ================
+Input filename: ../../inputs/input_1024_1000x1000.txt
+Number of threads: 64
+Number of ants: 614
+Number of cities: 1024
+Map size: 1000 x 1000
+init pheromone: 0.0000000322
+Initialization Time: 0.072068.
+Computation Time: 4.560753.
