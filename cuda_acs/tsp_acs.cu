@@ -7,6 +7,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 #include <cub/cub.cuh>
+#include <vector>
+#include <fstream>
 
 #include "CycleTimer.h"
 
@@ -17,15 +19,16 @@ extern float toBW(int bytes, float sec);
 const float pheromone_decay = .1f;
 const float dist_coef = 2.f;
 const float local_coef = .1f;
-const int candidate_list_len = 64;
 const float exploration_prob = 0.1f;
-const int num_ant = 614;
+const int num_ant = 128;
 const int seed = 1234;
-const bool use_candidate_list = true;
 const float t0 = 0.001f;
 const int num_iter = 256;
 const float pheromone_production = 1.f;
+bool run_2opt = true;
 bool run_2opt_for_each_iter = false;
+
+std::vector<float> globalTourRecord;
 
 struct GlobalConstants {
     int *city_x;
@@ -41,83 +44,6 @@ struct GlobalConstants {
 };
 
 __constant__ GlobalConstants cuConsts;
-
-struct Heap {
-    int *data;
-    int size;
-    int x;
-};
-
-__device__ __forceinline__ void heap_push(Heap *heap, int id) {
-    int current = heap->size;
-    if (current >= candidate_list_len) {
-        printf("Heap is full: Push rejected\n");
-        return;
-    }
-    heap->size++;
-    int x = heap->x;
-    int N = cuConsts.N;
-    int *data = heap->data;
-    float *distance = cuConsts.distance + x * N;
-    data[current] = id;
-    float current_dist = distance[id];
-    while (current > 0) {
-        int parent = (current - 1) >> 1;
-        if (current_dist > distance[data[parent]]) {
-            int tmp = data[parent];
-            data[parent] = data[current];
-            data[current] = tmp;
-        } else {
-            break;
-        }
-        current = parent;
-    }
-}
-
-__device__ __forceinline__ void heap_pop(Heap *heap) {
-    if (heap->size <= 0) {
-        printf("Heap is empty: Pop rejected\n");
-        return;
-    }
-    int size = heap->size--;
-    int x = heap->x;
-    int N = cuConsts.N;
-    int *data = heap->data;
-    float *distance = cuConsts.distance + x * N;
-    int top = data[0];
-    data[0] = data[size];
-    data[size] = top;
-    int current = 0;
-    float current_dist = distance[data[0]];
-    while (current < size) {
-        int child1 = (current << 1) + 1;
-        int child2 = child1 + 1;
-        if (child1 >= size) {
-            break;
-        }
-        float dist1, dist2;
-        if (child2 >= size) {
-            dist2 = -FLT_MAX;
-        } else {
-            dist2 = distance[data[child2]];
-        }
-        dist1 = distance[data[child1]];
-        int greater_child;
-        if (dist1 > dist2) {
-            greater_child = child1;
-        } else {
-            greater_child = child2;
-        }
-        if (distance[data[greater_child]] > current_dist) {
-            int tmp = data[current];
-            data[current] = data[greater_child];
-            data[greater_child] = tmp;
-        } else {
-            break;
-        }
-        current = greater_child;
-    }
-}
 
 struct NodeWeight {
     int node_id;
@@ -149,37 +75,6 @@ __global__ void initDistKernel() {
     cuConsts.distance[index] = sqrtf(diff_x * diff_x + diff_y * diff_y);
     cuConsts.adjusted_distance[index] = pow(cuConsts.distance[index], -dist_coef);
     cuConsts.pheromone[index] = 1.f;
-}
-
-__global__ void initCandListKernel() {
-    int index = blockIdx.x * blockDim.x + threadIdx.x;
-    int N = cuConsts.N;
-    if (index >= N) {
-        return;
-    }
-    Heap heap;
-    heap.size = 0;
-    heap.x = index;
-    float *distance = cuConsts.distance + index * N;
-    heap.data = cuConsts.candidate_list + index * candidate_list_len;
-    int j;
-    for (j = 0; heap.size < candidate_list_len && j < N; ++j) {
-        if (j != index) {
-            heap_push(&heap, j);
-        }
-    }
-    for (; j < N; ++j) {
-        if (j != index) {
-            int heap_top = heap.data[0];
-            if (distance[j] < distance[heap_top]) {
-                heap_pop(&heap);
-                heap_push(&heap, j);
-            }
-        }
-    }
-    while (heap.size > 0) {
-        heap_pop(&heap);
-    }
 }
 
 __device__ void atomicAxpy(float *address, float a, float y) {
@@ -489,7 +384,7 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
         dim3 check2optGridDim((N * (N >> 1) + blockDim.x - 1) / blockDim.x);
         int improveTarget;
         do {
-            if (!run_2opt_for_each_iter && i < num_iter - 1) {
+            if (!run_2opt || (!run_2opt_for_each_iter && i < num_iter - 1)) {
                 break;
             }
             cudaMemset(device_improve_target, 0, sizeof(int));
@@ -516,6 +411,7 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
             best_tour_length = host_tour_length[best_ant];
             cudaMemcpy(best_tour, &device_ant_tour[best_ant * N], sizeof(int) * N, cudaMemcpyDeviceToHost);
         }
+        globalTourRecord.push_back(best_tour_length);
         cudaDeviceSynchronize();
         printf("Stage %d complete\n", i);
     }
@@ -535,6 +431,13 @@ void acsCuda(int N, int *x, int *y, int *result, float *total_cost) {
     printf("Kernel: %.3f ms\t\t[%.3f GB/s]\n", 1000.f * kernelDuration, toBW(totalBytes, kernelDuration));
     double overallDuration = endTime - startTime;
     printf("Overall: %.3f ms\t\t[%.3f GB/s]\n", 1000.f * overallDuration, toBW(totalBytes, overallDuration));
+
+    std::ofstream of("log.csv");
+    of << "ant=" << num_ant << std::endl;
+    for (const auto l: globalTourRecord) {
+        of << l << std::endl;
+    }
+    of.close();
 
     delete[] host_distance;
     cudaFree(device_distance);
