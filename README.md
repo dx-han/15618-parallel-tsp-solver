@@ -1,6 +1,10 @@
 # CMU 15-618 Final Project: Parallel TSP Solver
 ##### Team members: Yujun Qin and Dongxiao Han
 
+## Final Report and Presentation
+- [Report](https://github.com/dx-han/15618-parallel-tsp-solver/blob/main/TSP_Final_Report.pdf)
+- Presentation on [GitHub](https://github.com/dx-han/15618-parallel-tsp-solver/blob/main/parallel-tsp_presentation.mp4) and [Google Drive](https://drive.google.com/file/d/10MFfPUnz7PuCEL5JaTJUrXuxF7S2a8qa/view)
+
 ## Project Proposal
 
 ### Summary
